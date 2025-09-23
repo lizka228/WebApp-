@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Skin-будди Камера</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: white;
+      font-family: sans-serif;
+    }
+    #video {
+      width: 100%;
+      max-width: 600px;
+      border-radius: 10px;
+    }
+
+    #overlay {
+      position: absolute;
+      top: -30px;
+      left:110px;
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+   }
+    canvas {
+      display: none;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #ff69b4;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div style="position: relative;">
+  <video id="video" autoplay playsinline></video>
+  <img id="overlay" src="oval-mask.png" alt="Маска овала">
+  </div>
+
+  <button id="snap">📸 Сделать снимок</button>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const snapBtn = document.getElementById('snap');
+
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+      } catch (err) {
+        alert('Не удалось получить доступ к камере');
+        console.error(err);
+      }
+    }
+
+    snapBtn.addEventListener('click', () => {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageData = canvas.toDataURL('image/png');
+      console.log('Снимок готов:', imageData);
+      // Здесь можно отправить imageData в Telegram-бот
+    });
+
+    startCamera();
+  </script>
+</body>
+</html>
