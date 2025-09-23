@@ -233,10 +233,8 @@
 		            height: canvas.height,
 		            timestamp: new Date().toISOString()// Отправляем полное изображение
 	          	}));
-// Показываем подтверждение
-	          	Telegram.WebApp.showAlert(`Фото сделано! Размер: ${canvas.width}x${canvas.height}`, () => {
-	            	Telegram.WebApp.close();
-	          	});
+// Показываем подтверждение (сразу закрываем)
+	            Telegram.WebApp.close();
         	} else {
           		alert("⚠️ Telegram WebApp API недоступен.");
         	}
@@ -258,6 +256,7 @@
 
 </body>
 </html>
+
 
 
 
