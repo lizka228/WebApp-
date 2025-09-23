@@ -88,6 +88,7 @@
   </div>
 
   <button id="snap">📸 Сделать снимок</button>
+  <a id="download" download="skin-photo.png">📥 Скачать фото</a>
   <canvas id="canvas"></canvas>
 	
   <script>
@@ -95,14 +96,11 @@
     const canvas = document.getElementById('canvas');
     const snapBtn = document.getElementById('snap');
     const loadingScreen = document.getElementById('loading-screen');
-	alert("Telegram WebApp:", window.Telegram?.WebApp);
+	  
     // Активируем Telegram WebApp API
     if (window.Telegram && Telegram.WebApp) {
       Telegram.WebApp.ready();
       Telegram.WebApp.expand(); // ⬆️ Разворачивает WebApp на весь экран
-	  alert('Готово');
-	} else {
-		alert("Telegram WebApp API недоступен — открой через Telegram.");
 	}
 
     
@@ -114,7 +112,6 @@
         video.onloadedmetadata = () => {
           video.play();
           loadingScreen.style.display = 'none'; // скрываем чёрный экран
-          console.log('Камера успешно запущена');
         };
       } catch (err) {
         alert('❌ Не удалось получить доступ к камере. Перезапустите приложение.');
@@ -134,22 +131,17 @@
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       const imageData = canvas.toDataURL('image/png');
-      alert('✅ Снимок готов:', imageData);
+	  document.getElementById('download').href = imageData;
 
-      // Отправка снимка в Telegram-бот
-      if (window.Telegram && Telegram.WebApp) {
-        Telegram.WebApp.sendData(imageData);
-        Telegram.WebApp.close(); // Закрываем WebApp после отправки (по желанию)
-      } else {
-        alert("⚠️ Telegram WebApp API недоступен.");
-		Telegram.WebApp.close(); // Закрываем WebApp после отправки (по желанию)
-      }
-    });
+	  Telegram.WebApp.close();
+	  alert("✅ Фото готово! Нажми «Скачать», а затем отправь его в чат с ботом для анализа.");// Закрываем WebApp после отправки (по желанию)
+
 
     startCamera();
   </script>
 </body>
 </html>
+
 
 
 
