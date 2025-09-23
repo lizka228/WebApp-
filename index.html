@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script> // Подключение библиотеки для взаимодейтвия с WebApp
   <title>SkinCare Камера</title>
   <style>
     body {
@@ -97,6 +98,9 @@
   const snapBtn = document.getElementById('snap');
   const loadingScreen = document.getElementById('loading-screen');
   const downloadBtn = document.getElementById('download');
+  let tg = window.Telegram.WebApp;
+  alert("Telegram WebApp:", window.Telegram?.WebApp);
+
 
   // Запускаем камеру при загрузке
   async function startCamera() {
@@ -139,6 +143,7 @@
 
 </body>
 </html>
+
 
 
 
