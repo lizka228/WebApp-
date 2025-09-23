@@ -103,7 +103,7 @@
 video.addEventListener('canplay', () => {
   cameraReady = true;
   loadingScreen.style.display = 'none';
-  console.log('✅ Камера готова к снимку');
+  alert('✅ Камера готова к снимку');
 });
 	 
   if (window.Telegram && Telegram.WebApp) {
@@ -122,7 +122,6 @@ video.addEventListener('canplay', () => {
       video.onloadedmetadata = () => {
         video.play();
         loadingScreen.style.display = 'none';
-        console.log('✅ Камера запущена');
       };
     } catch (err) {
       alert('❌ Не удалось получить доступ к камере.');
@@ -158,33 +157,5 @@ video.addEventListener('canplay', () => {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
