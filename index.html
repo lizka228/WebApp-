@@ -74,20 +74,6 @@
      color: white;
      cursor: pointer;
 }
-	  #user {
-		  position: absolute;
-     bottom: 40px;
-     left: 50%;
-     transform: translateX(-50%);
-     z-index: 3;
-     padding: 20px 40px;
-     font-size: 35px;
-     background-color: #ff69b4;
-     border: none;
-     border-radius: 12px;
-     color: white;
-     cursor: pointer;
-	  }
 
     canvas {
       display: none;
@@ -103,7 +89,6 @@
   </div>
 
   <button id="snap">📸 Сделать снимок</button>
-	<button id="user" onclick="showUser()">Показать пользователя</button>
   <a id="download" download="skin-photo.png">📥 Скачать фото</a>
   <canvas id="canvas"></canvas>
 	
@@ -138,14 +123,7 @@
       console.error('Ошибка камеры:', err);
     }
   }
-  function showUser() {
-	  let user = tg.initDataUnsafe.user;
-	  if (user) {
-		  alert(`Привет, ${user.first_name}!`)
-	  } else {
-		  alert('Пользователь не найден!')
-	  }
-  }
+  
   // Обработка кнопки "Сделать снимок"
   snapBtn.addEventListener('click', () => {
     if (!video.srcObject || video.videoWidth === 0 || video.videoHeight === 0) {
@@ -158,12 +136,12 @@
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     const imageData = canvas.toDataURL('image/png');
-    downloadBtn.href = imageData;
+
+	  
 	if (window.Telegram && Telegram.WebApp) {
         tg.sendData(imageData);
         tg.close(); // Закрываем WebApp после отправки (по желанию)
       }
-    alert("✅ Фото готово! Нажми «Скачать», а затем отправь его в чат с ботом.");
   });
 
   // Запускаем камеру при загрузке страницы
@@ -172,6 +150,7 @@
 
 </body>
 </html>
+
 
 
 
