@@ -36,19 +36,38 @@
     }
 
     #video {
-      width: 100%;
-      max-width: 1200px;
-      border-radius: 10px;
+     width: 100vw;
+     height: 100vh;
+     object-fit: cover;
+     position: absolute;
+     top: 0;
+     left: 0;
+     z-index: 1;
     }
 
     #overlay {
-      position: absolute;
-      top: -30px;
-      left:130px;
-      width: 100%;
-      max-width: 400px;
-      height: auto;
+     position: absolute;
+     top: 0;
+     left: 0;
+     width: 100vw;
+     height: 100vh;
+     z-index: 2;
+     pointer-events: none;
    }
+    #snap {
+     position: absolute;
+     bottom: 40px;
+     left: 50%;
+     transform: translateX(-50%);
+     z-index: 3;
+     padding: 20px 40px;
+     font-size: 24px;
+     background-color: #ff69b4;
+     border: none;
+     border-radius: 12px;
+     color: white;
+     cursor: pointer;
+}
 
     canvas {
       display: none;
@@ -82,6 +101,13 @@
     const canvas = document.getElementById('canvas');
     const snapBtn = document.getElementById('snap');
     const loadingScreen = document.getElementById('loading-screen');
+    
+    // Активируем Telegram WebApp API
+    if (window.Telegram && Telegram.WebApp) {
+      Telegram.WebApp.ready();
+      Telegram.WebApp.expand(); // ⬆️ Разворачивает WebApp на весь экран
+
+    }
 
     async function startCamera() {
       try {
@@ -100,13 +126,26 @@
     }
 
     snapBtn.addEventListener('click', () => {
+      if (!video.srcObject || video.videoWidth === 0 || video.videoHeight === 0) {
+        alert("⏳ Камера ещё не готова. Подожди пару секунд.");
+        return;
+      }
+
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
       const imageData = canvas.toDataURL('image/png');
-      console.log('Снимок готов:', imageData);
-      // Здесь можно отправить imageData в Telegram-бот
+      console.log('✅ Снимок готов:', imageData);
+
+      // Отправка снимка в Telegram-бот
+      if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.sendData(imageData);
+        Telegram.WebApp.close(); // Закрываем WebApp после отправки (по желанию)
+      } else {
+        alert("⚠️ Telegram WebApp API недоступен.");
+      }
     });
 
     startCamera();
