@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Skin-будди Камера</title>
+  <title>SkinCare Камера</title>
   <style>
     body {
       margin: 0;
@@ -95,7 +95,7 @@
     const canvas = document.getElementById('canvas');
     const snapBtn = document.getElementById('snap');
     const loadingScreen = document.getElementById('loading-screen');
-    
+    Telegram.WebApp.expand();
     // Активируем Telegram WebApp API
     if (window.Telegram && Telegram.WebApp) {
       Telegram.WebApp.ready();
@@ -131,7 +131,7 @@
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       const imageData = canvas.toDataURL('image/png');
-      console.log('✅ Снимок готов:', imageData);
+      alert('✅ Снимок готов:', imageData);
 
       // Отправка снимка в Telegram-бот
       if (window.Telegram && Telegram.WebApp) {
@@ -147,6 +147,7 @@
   </script>
 </body>
 </html>
+
 
 
 
