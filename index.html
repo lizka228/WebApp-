@@ -182,20 +182,21 @@
         	}	
   // Отправляем данные в Telegram бот
         	if (window.Telegram && Telegram.WebApp) {
-			
+
+				alert('Попытка отправить!')
     // Для больших изображений используем showConfirm и sendData
-			Telegram.WebApp.sendData(JSON.stringify({
-            	action: 'full_size_photo',
-            	width: canvas.width,
-            	height: canvas.height,
-            	data_size: imageData.length,
-            	image_data: imageData // Отправляем полное изображение
-          	}));
+				Telegram.WebApp.sendData(JSON.stringify({
+	            	action: 'full_size_photo',
+	            	width: canvas.width,
+	            	height: canvas.height,
+	            	data_size: imageData.length,
+	            	image_data: imageData // Отправляем полное изображение
+	          	}));
 			
 // Показываем подтверждение
-          	Telegram.WebApp.showAlert(`Фото сделано! Размер: ${canvas.width}x${canvas.height}`, () => {
-            	Telegram.WebApp.close();
-          	});
+	          	Telegram.WebApp.showAlert(`Фото сделано! Размер: ${canvas.width}x${canvas.height}`, () => {
+	            	Telegram.WebApp.close();
+	          	});
         	} else {
           		alert("⚠️ Telegram WebApp API недоступен.");
         	}
@@ -217,6 +218,7 @@
 
 </body>
 </html>
+
 
 
 
