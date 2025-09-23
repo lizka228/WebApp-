@@ -227,7 +227,7 @@
 	    snapBtn.disabled = true;
 	    snapBtn.textContent = "📸 Обработка...";
 		try {
-			const imageData = captureFullSizePhoto();
+			const imageData = await captureFullSizePhoto();
             if (!imageData) {
 				alert('фото не существует')
         		return;
@@ -274,6 +274,7 @@
 
 </body>
 </html>
+
 
 
 
