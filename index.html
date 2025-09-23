@@ -133,14 +133,16 @@
       const imageData = canvas.toDataURL('image/png');
 	  document.getElementById('download').href = imageData;
 
-	  //Telegram.WebApp.close();
-	  alert("✅ Фото готово! Нажми «Скачать», а затем отправь его в чат с ботом для анализа.");// Закрываем WebApp после отправки (по желанию)
+	  Telegram.WebApp.close(); // Закрываем WebApp после отправки (по желанию)
+	  alert("✅ Фото готово! Нажми «Скачать», а затем отправь его в чат с ботом для анализа.");
+	});
 
 
     startCamera();
   </script>
 </body>
 </html>
+
 
 
 
