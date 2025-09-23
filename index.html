@@ -1,161 +1,221 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <title>SkinCare Камера</title>
-  <style>
-    body {
-      margin: 0;
-      background: #000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      color: white;
-      font-family: sans-serif;
-    }
+	<meta charset="UTF-8">
+  	<script src="https://telegram.org/js/telegram-web-app.js"></script>
+  	<title>SkinCare Камера</title>
+  	<style>
+    	body {
+      		margin: 0;
+			background: #000;
+	      	display: flex;
+		    flex-direction: column;
+		    align-items: center;
+		    justify-content: center;
+		    height: 100vh;
+		    color: white;
+		    font-family: sans-serif;
+		}
 
-    #loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: black;
-      z-index: 9999;
-    }
+    	#loading-screen {
+		    position: fixed;
+		    top: 0;
+		    left: 0;
+		    width: 100vw;
+		    height: 100vh;
+		    background: black;
+		    z-index: 9999;
+			display: flex;
+		    flex-direction: column;
+		    align-items: center;
+		    justify-content: center;
+			font-size: 45px;
+    	}
 
-    #main-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      color: white;
-    }
+    	#video {
+     		display:block;
+		    margin-left:auto;
+		    margin-right:auto;
+		    width:100vw;
+		    height: 80vh;
+		    object-fit: cover;
+		    top: -10px;
+		    left: 0;
+		    z-index: 1;
+			transform: scaleX(-1);
+    	}
 
-    #video {
-     display:block;
-     margin-left:auto;
-     margin-right:auto;
-     width:100vw;
-     height: 80vh;
-     object-fit: cover;
-     top: -10px;
-     left: 0;
-     z-index: 1;
-	 transform: scaleX(-1);
-    }
+    	#overlay {
+			position: absolute;
+		    margin-left:auto;
+		    margin-right:auto;
+		    top: 0;
+		    left: 0;
+		    width: 100vw;
+		    height: 80vh;
+		    z-index: 2;
+		    pointer-events: none;
+   		}
+		
+    	#snap {
+	     	position: absolute;
+		    bottom: 40px;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    z-index: 3;
+		    padding: 40px 80px;
+		    font-size: 35px;
+		    background-color: #ff69b4;
+		    border: none;
+		    border-radius: 12px;
+		    color: white;
+		    cursor: pointer;
+		}
 
-    #overlay {
-     position: absolute;
-     margin-left:auto;
-     margin-right:auto;
-     top: 0;
-     left: 0;
-     width: 100vw;
-     height: 80vh;
-     z-index: 2;
-     pointer-events: none;
-   }
-    #snap {
-     position: absolute;
-     bottom: 40px;
-     left: 50%;
-     transform: translateX(-50%);
-     z-index: 3;
-     padding: 40px 80px;
-     font-size: 35px;
-     background-color: #ff69b4;
-     border: none;
-     border-radius: 12px;
-     color: white;
-     cursor: pointer;
-}
-
-    canvas {
-      display: none;
-    }
-
-  </style>
+    	canvas {
+      		display: none;
+    	}
+		#error-message {
+		    display: none;
+		    color: red;
+		    text-align: center;
+		    padding: 20px;
+    	}
+	</style>
 </head>
 <body>
-  <div id="loading-screen"></div>
-  <div style="position: relative;">
-  <video id="video" autoplay playsinline></video>
-  <img id="overlay" src="oval-mask.png" alt="Маска овала">
-  </div>
-
-  <button id="snap">📸 Сделать снимок</button>
-  <canvas id="canvas"></canvas>
+	<div id="loading-screen">Загрузка камеры...</div>
+	<div id="error-message"></div>
+		
+	<div style="position: relative;">
+		<video id="video" autoplay playsinline></video>
+		<img id="overlay" src="oval-mask.png" alt="Маска овала">
+	</div>
 	
- <script>
-  const video = document.getElementById('video');
-  const canvas = document.getElementById('canvas');
-  const snapBtn = document.getElementById('snap');
-  const loadingScreen = document.getElementById('loading-screen');
-  const downloadBtn = document.getElementById('download');
-  let tg = window.Telegram.WebApp;
-  let cameraReady = false;
+	<button id="snap">📸 Сделать снимок</button>
+	<canvas id="canvas"></canvas>
+		
+ 	<script>
+		const video = document.getElementById('video');
+		const canvas = document.getElementById('canvas');
+		const snapBtn = document.getElementById('snap');
+		const loadingScreen = document.getElementById('loading-screen');
+		const errorMessage = document.getElementById('error-message');
+		let tg = window.Telegram.WebApp;
 
-video.addEventListener('canplay', () => {
-  cameraReady = true;
-  loadingScreen.style.display = 'none';
-});
+// Проверяем доступность Telegram WebApp
+		if (window.Telegram && Telegram.WebApp) {
+			tg.ready();
+			tg.expand();
+		} else {
+			alert("Telegram WebApp API недоступен — открой через Telegram.");
+		}
+
+// Функция для показа ошибок
+	    function showError(message) {
+			errorMessage.textContent = message;
+	        errorMessage.style.display = 'block';
+	        loadingScreen.style.display = 'none';
+	        console.error(message);
+	    }
 	 
-  if (window.Telegram && Telegram.WebApp) {
-	  tg.ready();
-	  tg.expand();
-	} else {
-	  alert("Telegram WebApp API недоступен — открой через Telegram.");
-	}
-
   // Запускаем камеру при загрузке
-  async function startCamera() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      video.srcObject = stream;
-
-      video.onloadedmetadata = () => {
-        video.play();
-        loadingScreen.style.display = 'none';
-      };
-    } catch (err) {
-      alert('❌ Не удалось получить доступ к камере.');
-      console.error('Ошибка камеры:', err);
-    }
-  }
+		async function startCamera() {
+			try {
+		// Запрашиваем доступ к камере
+				const stream = await navigator.mediaDevices.getUserMedia({ 
+					video: { 
+		            	facingMode: 'user', // Используем фронтальную камеру
+			            width: { ideal: 1280 },
+			            height: { ideal: 720 }
+					}
+				});
+				video.srcObject = stream;
+				video.addEventListener('loadeddata', () => {
+					cameraReady = true;
+		        	loadingScreen.style.display = 'none';
+		    	});
+    		} catch (err) {
+				alert('❌ Не удалось получить доступ к камере.');
+      			console.error('Ошибка камеры:', err);
+    		}
+  		}
   
-  // Обработка кнопки "Сделать снимок"
-  snapBtn.addEventListener('click', () => {
-  if (!cameraReady) {
-    alert("⏳ Камера ещё не готова. Подожди пару секунд.");
-    return;
-  }
 
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+// Функция для создания снимка полного размера
+		function captureFullSizePhoto() {
+			if (!cameraReady) {
+				alert("⏳ Камера ещё не готова. Подожди пару секунд.");
+          		return null;
+      		}
+			
+// Устанавливаем размер canvas равным реальному размеру видео
+	  	canvas.width = video.videoWidth;
+	  	canvas.height = video.videoHeight;
+	  	const ctx = canvas.getContext('2d');
+			
+// Отрисовываем видео на canvas с зеркальным отображением
+      	ctx.save();
+	  	ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+      	ctx.restore();
+			
+// Конвертируем в base64 с максимальным качеством
+      	return canvas.toDataURL('image/jpeg', 1.0);
+		}
+		
+// Обработка кнопки "Сделать снимок"
+		snapBtn.addEventListener('click', async () => {
+			if (!cameraReady) {
+        		alert("⏳ Камера ещё не готова. Подожди пару секунд.");
+        		return;
+      		}
+			
+// Показываем индикатор загрузки
+	    snapBtn.disabled = true;
+	    snapBtn.textContent = "📸 Обработка...";
+		try {
+			const imageData = captureFullSizePhoto();
+            if (!imageData) {
+        		return;
+        	}	
+  // Отправляем данные в Telegram бот
+        	if (window.Telegram && Telegram.WebApp) {
+			
+    // Для больших изображений используем showConfirm и sendData
+			Telegram.WebApp.sendData(JSON.stringify({
+            	action: 'full_size_photo',
+            	width: canvas.width,
+            	height: canvas.height,
+            	data_size: imageData.length,
+            	image_data: imageData // Отправляем полное изображение
+          	}));
+			
+// Показываем подтверждение
+          	Telegram.WebApp.showAlert(`Фото сделано! Размер: ${canvas.width}x${canvas.height}`, () => {
+            	Telegram.WebApp.close();
+          	});
+        	} else {
+          		alert("⚠️ Telegram WebApp API недоступен.");
+        	}
+      	} catch (error) {
+			console.error('Ошибка при создании фото:', error);
+        	alert('Ошибка при создании фото');
+			
+      	} finally {
+			
+// Восстанавливаем кнопку
+        	snapBtn.disabled = false;
+        	snapBtn.textContent = "📸 Сделать снимок";
+		}
+	});
 
-  const imageData = canvas.toDataURL('image/png');
-
-  if (window.Telegram && Telegram.WebApp) {
-    Telegram.WebApp.sendData(imageData);
-    Telegram.WebApp.close();
-  } else {
-    alert("⚠️ Telegram WebApp API недоступен.");
-  }
-});
-
-  // Запускаем камеру при загрузке страницы
-  startCamera();
-</script>
+    // Запускаем камеру при загрузке страницы
+    startCamera();
+	</script>
 
 </body>
 </html>
+
 
 
 
