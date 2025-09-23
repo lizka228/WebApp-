@@ -147,42 +147,32 @@
 
 // Функция для создания снимка полного размера
 		function captureFullSizePhoto() {
-			return new Promise((resolve) => {
 				if (!cameraReady) {
-					resolve(null)
 					alert("⏳ Камера ещё не готова. Подожди пару секунд.");
-	          		return;
+	          		return null;
 	      		}
-// Даем время на рендеринг кадра
-				setTimeout(() => {
-					try {
+			
 // Устанавливаем размер canvas равным реальному размеру видео
-					  	canvas.width = video.videoWidth;
-					  	canvas.height = video.videoHeight;
-					  	const ctx = canvas.getContext('2d');
+				canvas.width = video.videoWidth;
+				canvas.height = video.videoHeight;
+				const ctx = canvas.getContext('2d');
 
 // Очищаем canvas перед рисованием
-						ctx.clearRect(0, 0, canvas.width, canvas.height);
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
 						
 // Отрисовываем видео на canvas с зеркальным отображением
-				      	ctx.save();
-					  	ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-				      	ctx.restore();
+				ctx.save();
+				ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+				ctx.restore();
 
 // Проверяем что canvas не пустой
-						const imageData = ctx.getImageData(0, 0, 1, 1).data;
-						if (imageData[0] === 0 && imageData[1] === 0 && imageData[2] === 0) {
-							console.warn('Canvas пустой или черный');
-						}
+				const imageData = ctx.getImageData(0, 0, 1, 1).data;
+				if (imageData[0] === 0 && imageData[1] === 0 && imageData[2] === 0) {
+					console.warn('Canvas пустой или черный');
+				}
+			
 // Конвертируем в base64 с максимальным качеством
-		      			const dataURL = canvas.toDataURL('image/jpeg', 0.9);
-						resolve(dataURL);
-					} catch (error) {
-						console.error('Ошибка при создании фото:', error);
-						resolve(null);
-					}
-				}, 100);
-			});
+				return canvas.toDataURL('image/jpeg', 0.9);
 		}
 
 // Функция передачи фото в IMGBB
@@ -230,7 +220,7 @@
 	    snapBtn.disabled = true;
 	    snapBtn.textContent = "📸 Обработка...";
 		try {
-			const imageData = await captureFullSizePhoto();
+			const imageData = captureFullSizePhoto();
             if (!imageData) {
 				alert('фото не существует')
         		return;
@@ -277,6 +267,7 @@
 
 </body>
 </html>
+
 
 
 
