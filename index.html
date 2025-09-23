@@ -103,7 +103,10 @@
 		const errorMessage = document.getElementById('error-message');
 		let tg = window.Telegram.WebApp;
 		let cameraReady = false;
-
+		
+// 🔑 ЗАМЕНИТЕ НА ВАШ КЛЮЧ С IMGBB.COM
+		const IMGBB_API_KEY = '9b14893d3a17360887a960319353f0b2';
+		
 // Проверяем доступность Telegram WebApp
 		if (window.Telegram && Telegram.WebApp) {
 			tg.ready();
@@ -163,6 +166,40 @@
 // Конвертируем в base64 с максимальным качеством
       		return canvas.toDataURL('image/jpeg', 1.0);
 		}
+
+// Функция передачи фото в IMGBB
+		async function uploadToImgBB(imageData) {
+			try {
+				// Убираем префикс data:image/jpeg;base64,
+				const base64Data = imageData.split(',')[1];
+				
+				// Создаем FormData для отправки
+				const formData = new FormData();
+				formData.append('image', base64Data);
+				
+				// Отправляем на ImgBB
+				const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+					method: 'POST',
+					body: formData
+				});
+				if (!response.ok) {
+					throw new Error(`Ошибка загрузки: ${response.status}`);
+				}
+				
+				const result = await response.json();
+				
+				if (result.success) {
+					return result.data.url; // Возвращаем URL фото
+				} else {
+					throw new Error('ImgBB вернул ошибку');
+					alert('ImgBB вернул ошибку');
+				}
+			} catch (error) {
+				console.error('Ошибка загрузки на ImgBB:', error);
+				alert('Ошибка загрузки на ImgBB:');
+				throw error;
+			}
+		}
 		
 // Обработка кнопки "Сделать снимок"
 		snapBtn.addEventListener('click', async () => {
@@ -179,18 +216,21 @@
             if (!imageData) {
 				alert('фото не существует')
         		return;
-        	}	
+        	}
+			snapBtn.textContent = "📸 Загружаем...";
+			const photoUrl = await uploadToImgBB(imageData);
+			console.log('Фото загружено, URL:', photoUrl);
   // Отправляем данные в Telegram бот
         	if (window.Telegram && Telegram.WebApp) {
 
 				
     // Для больших изображений используем showConfirm и sendData
 				Telegram.WebApp.sendData(JSON.stringify({
-	            	action: 'full_size_photo',
-	            	width: canvas.width,
-	            	height: canvas.height,
-	            	data_size: imageData.length,
-	            	image_data: imageData // Отправляем полное изображение
+	            	action: 'skin_analysis_photo',
+		            photo_url: photoUrl, // ✅ ОТПРАВЛЯЕМ ССЫЛКУ, А НЕ ФОТО
+		            width: canvas.width,
+		            height: canvas.height,
+		            timestamp: new Date().toISOString()// Отправляем полное изображение
 	          	}));
 				alert('Попытка отправить!')
 // Показываем подтверждение
@@ -218,6 +258,7 @@
 
 </body>
 </html>
+
 
 
 
