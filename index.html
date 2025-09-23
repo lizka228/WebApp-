@@ -95,11 +95,12 @@
     const canvas = document.getElementById('canvas');
     const snapBtn = document.getElementById('snap');
     const loadingScreen = document.getElementById('loading-screen');
-    Telegram.WebApp.expand();
+	  
     // Активируем Telegram WebApp API
     if (window.Telegram && Telegram.WebApp) {
       Telegram.WebApp.ready();
       Telegram.WebApp.expand(); // ⬆️ Разворачивает WebApp на весь экран
+	  alert('Готово');
 
     }
 
@@ -147,6 +148,7 @@
   </script>
 </body>
 </html>
+
 
 
 
