@@ -89,7 +89,6 @@
   </div>
 
   <button id="snap">📸 Сделать снимок</button>
-  <a id="download" download="skin-photo.png">📥 Скачать фото</a>
   <canvas id="canvas"></canvas>
 	
  <script>
@@ -99,7 +98,14 @@
   const loadingScreen = document.getElementById('loading-screen');
   const downloadBtn = document.getElementById('download');
   let tg = window.Telegram.WebApp;
+  let cameraReady = false;
 
+video.addEventListener('canplay', () => {
+  cameraReady = true;
+  loadingScreen.style.display = 'none';
+  console.log('✅ Камера готова к снимку');
+});
+	 
   if (window.Telegram && Telegram.WebApp) {
 	  Telegram.WebApp.ready();
 	  Telegram.WebApp.expand();
@@ -126,23 +132,25 @@
   
   // Обработка кнопки "Сделать снимок"
   snapBtn.addEventListener('click', () => {
-    if (!video.srcObject || video.videoWidth === 0 || video.videoHeight === 0) {
-      alert("⏳ Камера ещё не готова. Подожди пару секунд.");
-      return;
-    }
+  if (!cameraReady) {
+    alert("⏳ Камера ещё не готова. Подожди пару секунд.");
+    return;
+  }
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = canvas.toDataURL('image/png');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-	  
-	if (window.Telegram && Telegram.WebApp) {
-        Telegram.WebApp.sendData(imageData);
-        Telegram.WebApp.close(); // Закрываем WebApp после отправки (по желанию) 
-      }
-  });
+  const imageData = canvas.toDataURL('image/png');
+
+  if (window.Telegram && Telegram.WebApp) {
+    Telegram.WebApp.sendData(imageData);
+    Telegram.WebApp.close();
+  } else {
+    alert("⚠️ Telegram WebApp API недоступен.");
+  }
+});
 
   // Запускаем камеру при загрузке страницы
   startCamera();
@@ -150,6 +158,7 @@
 
 </body>
 </html>
+
 
 
 
