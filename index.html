@@ -139,8 +139,8 @@
 
 	  
 	if (window.Telegram && Telegram.WebApp) {
-        tg.sendData(imageData);
-        tg.close(); // Закрываем WebApp после отправки (по желанию)
+        Telegram.WebApp.sendData(imageData);
+        Telegram.WebApp.close(); // Закрываем WebApp после отправки (по желанию) 
       }
   });
 
@@ -150,6 +150,7 @@
 
 </body>
 </html>
+
 
 
 
