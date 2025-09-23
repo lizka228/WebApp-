@@ -101,9 +101,11 @@
       Telegram.WebApp.ready();
       Telegram.WebApp.expand(); // ⬆️ Разворачивает WebApp на весь экран
 	  alert('Готово');
+	} else {
+		alert("Telegram WebApp API недоступен — открой через Telegram.");
+	}
 
-    }
-
+    
     async function startCamera() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -148,6 +150,7 @@
   </script>
 </body>
 </html>
+
 
 
 
