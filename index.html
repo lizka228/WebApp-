@@ -102,6 +102,7 @@
 		const loadingScreen = document.getElementById('loading-screen');
 		const errorMessage = document.getElementById('error-message');
 		let tg = window.Telegram.WebApp;
+		let cameraReady = false;
 
 // Проверяем доступность Telegram WebApp
 		if (window.Telegram && Telegram.WebApp) {
@@ -136,7 +137,7 @@
 		        	loadingScreen.style.display = 'none';
 		    	});
     		} catch (err) {
-				alert('❌ Не удалось получить доступ к камере.');
+				alert('❌ Не удалось получить доступ к камере. Перезапустите приложение.');
       			console.error('Ошибка камеры:', err);
     		}
   		}
@@ -150,17 +151,17 @@
       		}
 			
 // Устанавливаем размер canvas равным реальному размеру видео
-	  	canvas.width = video.videoWidth;
-	  	canvas.height = video.videoHeight;
-	  	const ctx = canvas.getContext('2d');
+		  	canvas.width = video.videoWidth;
+		  	canvas.height = video.videoHeight;
+		  	const ctx = canvas.getContext('2d');
 			
 // Отрисовываем видео на canvas с зеркальным отображением
-      	ctx.save();
-	  	ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-      	ctx.restore();
+	      	ctx.save();
+		  	ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+	      	ctx.restore();
 			
 // Конвертируем в base64 с максимальным качеством
-      	return canvas.toDataURL('image/jpeg', 1.0);
+      		return canvas.toDataURL('image/jpeg', 1.0);
 		}
 		
 // Обработка кнопки "Сделать снимок"
@@ -199,7 +200,7 @@
         	}
       	} catch (error) {
 			console.error('Ошибка при создании фото:', error);
-        	alert('Ошибка при создании фото');
+        	alert('Ошибка при создании фото', error);
 			
       	} finally {
 			
@@ -215,6 +216,7 @@
 
 </body>
 </html>
+
 
 
 
