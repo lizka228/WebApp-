@@ -103,12 +103,11 @@
 video.addEventListener('canplay', () => {
   cameraReady = true;
   loadingScreen.style.display = 'none';
-  alert('✅ Камера готова к снимку');
 });
 	 
   if (window.Telegram && Telegram.WebApp) {
-	  Telegram.WebApp.ready();
-	  Telegram.WebApp.expand();
+	  tg.ready();
+	  tg.expand();
 	} else {
 	  alert("Telegram WebApp API недоступен — открой через Telegram.");
 	}
@@ -157,5 +156,6 @@ video.addEventListener('canplay', () => {
 
 </body>
 </html>
+
 
 
