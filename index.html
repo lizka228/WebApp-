@@ -101,7 +101,6 @@
 		const snapBtn = document.getElementById('snap');
 		const loadingScreen = document.getElementById('loading-screen');
 		const errorMessage = document.getElementById('error-message');
-		let tg = window.Telegram.WebApp;
 		let cameraReady = false;
 		
 // 🔑 ЗАМЕНИТЕ НА ВАШ КЛЮЧ С IMGBB.COM
@@ -148,23 +147,39 @@
 
 // Функция для создания снимка полного размера
 		function captureFullSizePhoto() {
-			if (!cameraReady) {
-				alert("⏳ Камера ещё не готова. Подожди пару секунд.");
-          		return null;
-      		}
-			
+			return new Promise((resolve) => {
+				if (!cameraReady) {
+					alert("⏳ Камера ещё не готова. Подожди пару секунд.");
+	          		return null;
+	      		}
+// Даем время на рендеринг кадра
+				setTimeout(() => {
+					try {
 // Устанавливаем размер canvas равным реальному размеру видео
-		  	canvas.width = video.videoWidth;
-		  	canvas.height = video.videoHeight;
-		  	const ctx = canvas.getContext('2d');
-			
+					  	canvas.width = video.videoWidth;
+					  	canvas.height = video.videoHeight;
+					  	const ctx = canvas.getContext('2d');
+						ctx.clearRect(0, 0, canvas.width, canvas.height);
+						
 // Отрисовываем видео на canvas с зеркальным отображением
-	      	ctx.save();
-		  	ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-	      	ctx.restore();
-			
+				      	ctx.save();
+					  	ctx.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+				      	ctx.restore();
+
+// Проверяем что canvas не пустой
+						const imageData = ctx.getImageData(0, 0, 1, 1).data;
+						if (imageData[0] === 0 && imageData[1] === 0 && imageData[2] === 0) {
+							console.warn('Canvas пустой или черный');
+						}
 // Конвертируем в base64 с максимальным качеством
-      		return canvas.toDataURL('image/jpeg', 1.0);
+		      			const dataURL = canvas.toDataURL('image/jpeg', 0.9);
+						resolve(dataURL);
+					} catch (error) {
+						console.error('Ошибка при создании фото:', error);
+						resolve(null);
+					}
+				}, 100);
+			});
 		}
 
 // Функция передачи фото в IMGBB
@@ -223,16 +238,17 @@
   // Отправляем данные в Telegram бот
         	if (window.Telegram && Telegram.WebApp) {
 
-				
     // Для больших изображений используем showConfirm и sendData
 				Telegram.WebApp.sendData(JSON.stringify({
 	            	action: 'skin_analysis_photo',
+					userid: window.Telegram.WebApp.initDataUnsafe.id,
+					username: window.Telegram.WebApp.initDataUnsafe.iusername,
 		            photo_url: photoUrl, // ✅ ОТПРАВЛЯЕМ ССЫЛКУ, А НЕ ФОТО
 		            width: canvas.width,
 		            height: canvas.height,
-		            timestamp: new Date().toISOString()// Отправляем полное изображение
+		            timestamp: new Date().toISOString() // время отправки
 	          	}));
-				alert('Попытка отправить!')
+				
 // Показываем подтверждение
 	          	Telegram.WebApp.showAlert(`Фото сделано! Размер: ${canvas.width}x${canvas.height}`, () => {
 	            	Telegram.WebApp.close();
@@ -258,6 +274,7 @@
 
 </body>
 </html>
+
 
 
 
