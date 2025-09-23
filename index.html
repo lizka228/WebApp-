@@ -149,8 +149,9 @@
 		function captureFullSizePhoto() {
 			return new Promise((resolve) => {
 				if (!cameraReady) {
+					resolve(null)
 					alert("⏳ Камера ещё не готова. Подожди пару секунд.");
-	          		return null;
+	          		return;
 	      		}
 // Даем время на рендеринг кадра
 				setTimeout(() => {
@@ -159,6 +160,8 @@
 					  	canvas.width = video.videoWidth;
 					  	canvas.height = video.videoHeight;
 					  	const ctx = canvas.getContext('2d');
+
+// Очищаем canvas перед рисованием
 						ctx.clearRect(0, 0, canvas.width, canvas.height);
 						
 // Отрисовываем видео на canvas с зеркальным отображением
@@ -274,6 +277,7 @@
 
 </body>
 </html>
+
 
 
 
