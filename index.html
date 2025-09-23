@@ -91,57 +91,55 @@
   <a id="download" download="skin-photo.png">📥 Скачать фото</a>
   <canvas id="canvas"></canvas>
 	
-  <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const snapBtn = document.getElementById('snap');
-    const loadingScreen = document.getElementById('loading-screen');
-	  
-    // Активируем Telegram WebApp API
-    if (window.Telegram && Telegram.WebApp) {
-      Telegram.WebApp.ready();
-      Telegram.WebApp.expand(); // ⬆️ Разворачивает WebApp на весь экран
-	}
+ <script>
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const snapBtn = document.getElementById('snap');
+  const loadingScreen = document.getElementById('loading-screen');
+  const downloadBtn = document.getElementById('download');
 
-    
-    async function startCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = stream;
+  // Запускаем камеру при загрузке
+  async function startCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
 
-        video.onloadedmetadata = () => {
-          video.play();
-          loadingScreen.style.display = 'none'; // скрываем чёрный экран
-        };
-      } catch (err) {
-        alert('❌ Не удалось получить доступ к камере. Перезапустите приложение.');
-        console.error('Ошибка камеры:', err);
-      }
+      video.onloadedmetadata = () => {
+        video.play();
+        loadingScreen.style.display = 'none';
+        console.log('✅ Камера запущена');
+      };
+    } catch (err) {
+      alert('❌ Не удалось получить доступ к камере.');
+      console.error('Ошибка камеры:', err);
+    }
+  }
+
+  // Обработка кнопки "Сделать снимок"
+  snapBtn.addEventListener('click', () => {
+    if (!video.srcObject || video.videoWidth === 0 || video.videoHeight === 0) {
+      alert("⏳ Камера ещё не готова. Подожди пару секунд.");
+      return;
     }
 
-    snapBtn.addEventListener('click', () => {
-      if (!video.srcObject || video.videoWidth === 0 || video.videoHeight === 0) {
-        alert("⏳ Камера ещё не готова. Подожди пару секунд.");
-        return;
-      }
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const imageData = canvas.toDataURL('image/png');
+    downloadBtn.href = imageData;
 
-      const imageData = canvas.toDataURL('image/png');
-	  document.getElementById('download').href = imageData;
+    alert("✅ Фото готово! Нажми «Скачать», а затем отправь его в чат с ботом.");
+  });
 
-	  Telegram.WebApp.close(); // Закрываем WebApp после отправки (по желанию)
-	  alert("✅ Фото готово! Нажми «Скачать», а затем отправь его в чат с ботом для анализа.");
-	});
+  // Запускаем камеру при загрузке страницы
+  startCamera();
+</script>
 
-
-    startCamera();
-  </script>
 </body>
 </html>
+
 
 
 
