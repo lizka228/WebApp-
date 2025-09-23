@@ -222,17 +222,17 @@
 			console.log('Фото загружено, URL:', photoUrl);
   // Отправляем данные в Telegram бот
         	if (window.Telegram && Telegram.WebApp) {
-
 				
     // Для больших изображений используем showConfirm и sendData
 				Telegram.WebApp.sendData(JSON.stringify({
 	            	action: 'skin_analysis_photo',
+					userid: window.Telegram.WebApp.initDataUnsafe.id,
+					username: window.Telegram.WebApp.initDataUnsafe.iusername,
 		            photo_url: photoUrl, // ✅ ОТПРАВЛЯЕМ ССЫЛКУ, А НЕ ФОТО
 		            width: canvas.width,
 		            height: canvas.height,
 		            timestamp: new Date().toISOString()// Отправляем полное изображение
 	          	}));
-				alert('Попытка отправить!')
 // Показываем подтверждение
 	          	Telegram.WebApp.showAlert(`Фото сделано! Размер: ${canvas.width}x${canvas.height}`, () => {
 	            	Telegram.WebApp.close();
@@ -258,6 +258,7 @@
 
 </body>
 </html>
+
 
 
 
