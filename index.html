@@ -235,6 +235,8 @@
 		            height: canvas.height,
 		            timestamp: new Date().toISOString()// Отправляем полное изображение
 	          	}));
+				Telegram.WebApp.showAlert("✅ Данные отправлены!");
+				
 // Показываем подтверждение (сразу закрываем)
 	            Telegram.WebApp.close();
         	} else {
@@ -258,6 +260,7 @@
 
 </body>
 </html>
+
 
 
 
