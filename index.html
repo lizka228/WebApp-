@@ -213,6 +213,16 @@
 	    snapBtn.textContent = "📸 Обработка...";
 		try {
 			const imageData = captureFullSizePhoto();
+			video.srcObject.getTracks().forEach(track => track.stop());
+			video.style.display = 'none'; // скрыть видео
+
+			// Показываем canvas
+			canvas.style.display = 'block';
+			canvas.style.width = '100vw';
+			canvas.style.height = '80vh';
+			canvas.style.objectFit = 'cover';
+			canvas.style.transform = 'scaleX(-1)';
+			
             if (!imageData) {
 				alert('фото не существует')
         		return;
@@ -221,6 +231,7 @@
 			const photoUrl = await uploadToImgBB(imageData);
 			console.log("initDataUnsafe:", Telegram.WebApp.initDataUnsafe);
 			console.log("user:", Telegram.WebApp.initDataUnsafe.user);
+
 
   // Отправляем данные в Telegram бот
         	if (window.Telegram && Telegram.WebApp) {
@@ -261,6 +272,7 @@
 
 </body>
 </html>
+
 
 
 
