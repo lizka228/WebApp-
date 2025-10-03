@@ -220,14 +220,16 @@
 			snapBtn.textContent = "📸 Загружаем...";
 			const photoUrl = await uploadToImgBB(imageData);
 			console.log("initDataUnsafe:", Telegram.WebApp.initDataUnsafe);
+			console.log("user:", Telegram.WebApp.initDataUnsafe.user);
+
   // Отправляем данные в Telegram бот
         	if (window.Telegram && Telegram.WebApp) {
 				
     // Для больших изображений используем showConfirm и sendData
 				Telegram.WebApp.sendData(JSON.stringify({
 	            	action: 'skin_analysis_photo',
-					userid: window.Telegram.WebApp.initDataUnsafe.id,
-					username: window.Telegram.WebApp.initDataUnsafe.iusername,
+					userid: Telegram.WebApp.initDataUnsafe.user?.id,
+					username: Telegram.WebApp.initDataUnsafe.user?.username || "unknown",
 		            photo_url: photoUrl, // ✅ ОТПРАВЛЯЕМ ССЫЛКУ, А НЕ ФОТО
 		            width: canvas.width,
 		            height: canvas.height,
@@ -256,6 +258,7 @@
 
 </body>
 </html>
+
 
 
 
