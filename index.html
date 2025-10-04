@@ -230,8 +230,8 @@
         	}
 			snapBtn.textContent = "📸 Загружаем...";
 			const photoUrl = await uploadToImgBB(imageData);
-			console.log("initDataUnsafe:", Telegram.WebApp.initDataUnsafe);
-			console.log("user:", Telegram.WebApp.initDataUnsafe.user);
+			console.log("initDataUnsafe:", tg.initDataUnsafe);
+			console.log("user:", tg.initDataUnsafe.user);
 
 
   // Отправляем данные в Telegram бот
@@ -272,6 +272,7 @@
 
 </body>
 </html>
+
 
 
 
