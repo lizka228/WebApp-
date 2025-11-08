@@ -156,15 +156,26 @@
 // Устанавливаем размер canvas равным реальному размеру видео
 		  	canvas.width = video.videoWidth;
 		  	canvas.height = video.videoHeight;
+			const croppedCanvas = document.createElement('canvas');
 		  	const ctx = canvas.getContext('2d');
+
+			// Пример: обрезаем центральную часть (например, лицо)
+			const cropWidth = canvas.width * 0.6;
+			const cropHeight = canvas.height * 0.6;
+			const cropX = (canvas.width - cropWidth) / 2;
+			const cropY = (canvas.height - cropHeight) / 2;
+			
+			croppedCanvas.width = cropWidth;
+			croppedCanvas.height = cropHeight;
 			
 // Отрисовываем видео на canvas с зеркальным отображением
 	      	ctx.save();
-			ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+			ctx.drawImage(canvas, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+			// ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 	      	ctx.restore();
 			
 // Конвертируем в base64 с максимальным качеством
-      		return canvas.toDataURL('image/jpeg', 0.5);
+      		return croppedCanvas.toDataURL('image/jpeg', 1.0);
 		}
 
 // Функция передачи фото в IMGBB
@@ -273,6 +284,7 @@
 
 </body>
 </html>
+
 
 
 
