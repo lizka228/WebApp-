@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+..<!DOCTYPE html>
 <html lang="ru">
 <head>
 	<meta charset="UTF-8">
@@ -130,8 +130,8 @@
 				const stream = await navigator.mediaDevices.getUserMedia({ 
 					video: { 
 		            	facingMode: 'user', // Используем фронтальную камеру
-			            width: { ideal: 640 },
-			            height: { ideal: 640 }
+			            width: { ideal: 1280 },
+			            height: { ideal: 720 }
 					}
 				});
 				video.srcObject = stream;
@@ -164,7 +164,7 @@
 	      	ctx.restore();
 			
 // Конвертируем в base64 с максимальным качеством
-      		return canvas.toDataURL('image/jpeg', 0.9);
+      		return canvas.toDataURL('image/jpeg', 1.0);
 		}
 
 // Функция передачи фото в IMGBB
@@ -243,7 +243,7 @@
 	            	action: 'skin_analysis_photo',
 					userid: Telegram.WebApp.initDataUnsafe.user?.id,
 					username: Telegram.WebApp.initDataUnsafe.user?.username,
-					photo_base24:imageData,
+					//photo_base24:imageData,
 		            photo_url: photoUrl, // ✅ ОТПРАВЛЯЕМ ССЫЛКУ, А НЕ ФОТО
 		            width: canvas.width,
 		            height: canvas.height,
@@ -273,6 +273,7 @@
 
 </body>
 </html>
+
 
 
 
