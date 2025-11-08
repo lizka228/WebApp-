@@ -130,8 +130,8 @@
 				const stream = await navigator.mediaDevices.getUserMedia({ 
 					video: { 
 		            	facingMode: 'user', // Используем фронтальную камеру
-			            width: { ideal: 1280 },
-			            height: { ideal: 720 }
+			            width: { ideal: 640 },
+			            height: { ideal: 640 }
 					}
 				});
 				video.srcObject = stream;
@@ -156,22 +156,11 @@
 // Устанавливаем размер canvas равным реальному размеру видео
 		  	canvas.width = video.videoWidth;
 		  	canvas.height = video.videoHeight;
-			const croppedCanvas = document.createElement('canvas');
 		  	const ctx = canvas.getContext('2d');
-
-			// Пример: обрезаем центральную часть (например, лицо)
-			const cropWidth = canvas.width * 0.8;
-			const cropHeight = canvas.height * 0.8;
-			const cropX = (canvas.width - cropWidth) / 2;
-			const cropY = (canvas.height - cropHeight) / 2;
-			
-			croppedCanvas.width = cropWidth;
-			croppedCanvas.height = cropHeight;
 			
 // Отрисовываем видео на canvas с зеркальным отображением
 	      	ctx.save();
-			ctx.drawImage(canvas, cropX, cropY, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
-			// ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+			ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 	      	ctx.restore();
 			
 // Конвертируем в base64 с максимальным качеством
@@ -284,6 +273,7 @@
 
 </body>
 </html>
+
 
 
 
