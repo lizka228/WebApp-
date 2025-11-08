@@ -236,7 +236,7 @@
 			// Создаем FormData для отправки
 			const formData = new FormData();
 			// Убираем префикс data:image/jpeg;base64,
-			const base64Data = imageData.split(',')[1];
+			const base64Data = imageData
 			formData.append('image', base64Data);
 
 
@@ -278,6 +278,7 @@
 
 </body>
 </html>
+
 
 
 
