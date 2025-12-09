@@ -103,9 +103,6 @@
 		const errorMessage = document.getElementById('error-message');
 		let tg = window.Telegram.WebApp;
 		let cameraReady = false;
-		const userId = Telegram.WebApp.initDataUnsafe.user?.id || "unknown";
-		const timestamp = new Date().toISOString().replace(/[:.]/g, "-"); // заменяем двоеточия и точки, чтобы путь был валидным
-		const fileName = `skin_${userId}_${timestamp}.jpg`;
 		
 // 🔑 ЗАМЕНИТЕ НА ВАШ КЛЮЧ С IMGBB.COM
 		const IMGBB_API_KEY = '9b14893d3a17360887a960319353f0b2';
@@ -118,7 +115,10 @@
 		} else {
 			alert("Telegram WebApp API недоступен — открой через Telegram.");
 		}
-
+		const userId = window.Telegram.WebApp.initDataUnsafe.user?.id || "unknown";
+		const timestamp = new Date().toISOString().replace(/[:.]/g, "-"); // заменяем двоеточия и точки, чтобы путь был валидным
+		const fileName = `skin_${userId}_${timestamp}.jpg`;
+		
 // Функция для показа ошибок
 	    function showError(message) {
 			errorMessage.textContent = message;
@@ -293,6 +293,7 @@
 
 </body>
 </html>
+
 
 
 
