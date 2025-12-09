@@ -262,8 +262,6 @@
 				Telegram.WebApp.sendData(JSON.stringify({
 	            	action: 'skin_analysis_photo',
 					userid: userId,
-					username: Telegram.WebApp.initDataUnsafe.user?.username,
-					//photo_base24:imageData,
 		            photo_url: photoUrl, // ✅ ОТПРАВЛЯЕМ ССЫЛКУ, А НЕ ФОТО
 		            width: canvas.width,
 		            height: canvas.height,
@@ -293,6 +291,7 @@
 
 </body>
 </html>
+
 
 
 
