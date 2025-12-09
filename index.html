@@ -106,6 +106,7 @@
 		
 // 🔑 ЗАМЕНИТЕ НА ВАШ КЛЮЧ С IMGBB.COM
 		const IMGBB_API_KEY = '9b14893d3a17360887a960319353f0b2';
+		const YANDEX_TOKEN = "y0__xDxz_mkqveAAhinmjwg8NipzBUWCXR2tIl-fVubcRQwSlrZ-AfMKA"; // полученный через OAuth
 		
 // Проверяем доступность Telegram WebApp
 		if (window.Telegram && Telegram.WebApp) {
@@ -167,39 +168,53 @@
       		return canvas.toDataURL('image/jpeg', 1.0);
 		}
 
-// Функция передачи фото в IMGBB
-		async function uploadToImgBB(imageData) {
+// Функция передачи фото в Яндекс диск
+		async function uploadYaDisk(imageData) {
 			try {
 				// Убираем префикс data:image/jpeg;base64,
 				const base64Data = imageData.split(',')[1];
+				const blob = await (await fetch(`data:image/jpeg;base64,${base64Data}`)).blob();
+
+				// 1. Получаем URL для загрузки
+			    const uploadUrlResp = await fetch(
+			      "https://cloud-api.yandex.net/v1/disk/resources/upload?path=app:/skin_photo.jpg&overwrite=true",
+			      {
+			        method: "GET",
+			        headers: { Authorization: `OAuth ${YANDEX_TOKEN}` }
+			      }
+			    );
+			    const uploadUrlData = await uploadUrlResp.json();
+			    if (!uploadUrlData.href) throw new Error("Не удалось получить upload URL");
 				
-				// Создаем FormData для отправки
-				const formData = new FormData();
-				formData.append('image', base64Data);
-				
-				// Отправляем на ImgBB
-				const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-					method: 'POST',
-					body: formData
-				});
-				if (!response.ok) {
-					throw new Error(`Ошибка загрузки: ${response.status}`);
-				}
-				
-				const result = await response.json();
-				
-				if (result.success) {
-					return result.data.url; // Возвращаем URL фото
-				} else {
-					throw new Error('ImgBB вернул ошибку');
-					alert('ImgBB вернул ошибку');
-				}
-			} catch (error) {
-				console.error('Ошибка загрузки на ImgBB:', error);
-				alert('Ошибка загрузки на ImgBB:');
-				throw error;
+				// 2. Загружаем файл
+			    await fetch(uploadUrlData.href, {
+			      method: "PUT",
+			      body: blob
+			    });
+			
+			    // 3. Делаем файл публичным
+			    await fetch(
+			      "https://cloud-api.yandex.net/v1/disk/resources/publish?path=app:/skin_photo.jpg",
+			      {
+			        method: "POST",
+			        headers: { Authorization: `OAuth ${YANDEX_TOKEN}` }
+			      }
+			    );
+			
+			    // 4. Получаем публичную ссылку
+			    const metaResp = await fetch(
+			      "https://cloud-api.yandex.net/v1/disk/resources?path=app:/skin_photo.jpg",
+			      {
+			        headers: { Authorization: `OAuth ${YANDEX_TOKEN}` }
+			      }
+			    );
+			    const metaData = await metaResp.json();
+			    return metaData.public_url;
+			  } catch (error) {
+			    console.error("Ошибка загрузки на Яндекс.Диск:", error);
+			    throw error;
+			  }
 			}
-		}
 		
 // Обработка кнопки "Сделать снимок"
 		snapBtn.addEventListener('click', async () => {
@@ -273,6 +288,7 @@
 
 </body>
 </html>
+
 
 
 
