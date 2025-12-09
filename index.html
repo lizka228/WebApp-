@@ -103,6 +103,9 @@
 		const errorMessage = document.getElementById('error-message');
 		let tg = window.Telegram.WebApp;
 		let cameraReady = false;
+		const userId = Telegram.WebApp.initDataUnsafe.user?.id || "unknown";
+		const timestamp = new Date().toISOString().replace(/[:.]/g, "-"); // заменяем двоеточия и точки, чтобы путь был валидным
+		const fileName = `skin_${userId}_${timestamp}.jpg`;
 		
 // 🔑 ЗАМЕНИТЕ НА ВАШ КЛЮЧ С IMGBB.COM
 		const IMGBB_API_KEY = '9b14893d3a17360887a960319353f0b2';
@@ -175,41 +178,43 @@
 				const base64Data = imageData.split(',')[1];
 				const blob = await (await fetch(`data:image/jpeg;base64,${base64Data}`)).blob();
 
+
 				// 1. Получаем URL для загрузки
-			    const uploadUrlResp = await fetch(
-			      "https://cloud-api.yandex.net/v1/disk/resources/upload?path=app:/skin_photo.jpg&overwrite=true",
-			      {
-			        method: "GET",
-			        headers: { Authorization: `OAuth ${YANDEX_TOKEN}` }
-			      }
-			    );
-			    const uploadUrlData = await uploadUrlResp.json();
-			    if (!uploadUrlData.href) throw new Error("Не удалось получить upload URL");
+				const uploadUrlResp = await fetch(
+				  `https://cloud-api.yandex.net/v1/disk/resources/upload?path=app:/${fileName}&overwrite=true`,
+				  {
+				    method: "GET",
+				    headers: { Authorization: `OAuth ${YANDEX_TOKEN}` }
+				  }
+				);
+				const uploadUrlData = await uploadUrlResp.json();
+				if (!uploadUrlData.href) throw new Error("Не удалось получить upload URL");
 				
 				// 2. Загружаем файл
-			    await fetch(uploadUrlData.href, {
-			      method: "PUT",
-			      body: blob
-			    });
-			
-			    // 3. Делаем файл публичным
-			    await fetch(
-			      "https://cloud-api.yandex.net/v1/disk/resources/publish?path=app:/skin_photo.jpg",
-			      {
-			        method: "POST",
-			        headers: { Authorization: `OAuth ${YANDEX_TOKEN}` }
-			      }
-			    );
-			
-			    // 4. Получаем публичную ссылку
-			    const metaResp = await fetch(
-			      "https://cloud-api.yandex.net/v1/disk/resources?path=app:/skin_photo.jpg",
-			      {
-			        headers: { Authorization: `OAuth ${YANDEX_TOKEN}` }
-			      }
-			    );
-			    const metaData = await metaResp.json();
-			    return metaData.public_url;
+				await fetch(uploadUrlData.href, {
+				  method: "PUT",
+				  body: blob
+				});
+				
+				// 3. Делаем файл публичным
+				await fetch(
+				  `https://cloud-api.yandex.net/v1/disk/resources/publish?path=app:/${fileName}`,
+				  {
+				    method: "POST",
+				    headers: { Authorization: `OAuth ${YANDEX_TOKEN}` }
+				  }
+				);
+				
+				// 4. Получаем публичную ссылку
+				const metaResp = await fetch(
+				  `https://cloud-api.yandex.net/v1/disk/resources?path=app:/${fileName}`,
+				  {
+				    headers: { Authorization: `OAuth ${YANDEX_TOKEN}` }
+				  }
+				);
+				const metaData = await metaResp.json();
+				return metaData.public_url;
+
 			  } catch (error) {
 			    console.error("Ошибка загрузки на Яндекс.Диск:", error);
 			    throw error;
@@ -256,13 +261,13 @@
     // Для больших изображений используем showConfirm и sendData
 				Telegram.WebApp.sendData(JSON.stringify({
 	            	action: 'skin_analysis_photo',
-					userid: Telegram.WebApp.initDataUnsafe.user?.id,
+					userid: userId,
 					username: Telegram.WebApp.initDataUnsafe.user?.username,
 					//photo_base24:imageData,
 		            photo_url: photoUrl, // ✅ ОТПРАВЛЯЕМ ССЫЛКУ, А НЕ ФОТО
 		            width: canvas.width,
 		            height: canvas.height,
-		            timestamp: new Date().toISOString()// Отправляем полное изображение
+		            timestamp: timestamp// Отправляем полное изображение
 	          	}));
 				
 // Показываем подтверждение (не сразу закрываем)
@@ -288,6 +293,7 @@
 
 </body>
 </html>
+
 
 
 
